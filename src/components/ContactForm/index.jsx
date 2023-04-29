@@ -1,35 +1,32 @@
 import styles from './ContactForm.module.css';
 import React from 'react';
-import { nanoid } from 'nanoid';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from 'redux/contacts/contactSlice';
-import { getItems } from 'redux/contacts/selectors';
-import { findAllInRenderedTree } from 'react-dom/test-utils';
+import { addContact } from 'redux/contacts/operations';
+import { selectItems } from 'redux/contacts/selectors';
 
 export const ContactForm = () => {
-  let elementId = nanoid();
   const dispatch = useDispatch();
-  const items = useSelector(getItems);
+  const items = useSelector(selectItems);
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    const form = e.currentTarget;
+  const handleSubmit = evt => {
+    evt.preventDefault();
+    const form = evt.currentTarget;
     const name = form.elements.name.value;
-    const number = form.elements.number.value;
+    const phone = form.elements.number.value;
     const nameArray = items.map(item => item.name);
     if (nameArray.includes(name)) {
-      return findAllInRenderedTree(`${name} is already in contacts`);
+      return alert(`${name} is already in contacts.`);
     }
-    dispatch(addContact(name, number));
+    dispatch(addContact({ name, phone }));
     form.reset();
   };
 
   return (
-    <form className={styles.form} htmlFor={elementId} onSubmit={handleSubmit}>
+    <form className={styles.form} htmlFor="contactForm" onSubmit={handleSubmit}>
       <label className={styles.label}>
         Name
         <input
-          id={elementId}
+          id="inputName"
           className={styles.input}
           type="text"
           name="name"
@@ -41,7 +38,7 @@ export const ContactForm = () => {
       <label className={styles.label}>
         Number
         <input
-          id={elementId}
+          id="inputNumber"
           className={styles.input}
           type="tel"
           name="number"
@@ -50,6 +47,7 @@ export const ContactForm = () => {
           required
         />
       </label>
+
       <button className={styles.button} type="submit">
         Add Contact
       </button>
